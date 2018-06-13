@@ -1,0 +1,192 @@
+
+{% load i18n %}
+<style>
+    .tictactoe_button{
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        font-size:20px;
+        padding: 16px 32px;
+        text-decoration: none;
+        margin: 4px 2px;
+        cursor: pointer;
+        width : 150px;
+        height: 150px;
+    }
+</style>
+
+<script type="text/javascript">
+	var arr = [-1,-1,-1,-1,-1,-1,-1,-1,-1];
+	var turn = 0,t = 5;
+	var prev_history = [], next_history = [];
+	var cur_pos = 0;
+	var gameDisabled = false;
+	function isGameCompleted()
+	{
+		for(var i = 0;i < 9; i+=3)
+		{
+			if(arr[i] == arr[i+1] && arr[i+1] == arr[i+2]){
+				if(arr[i] != -1)
+					return true;
+			}
+		}
+		for(var i1 = 0;i1 < 3; i1++)
+		{
+			if(arr[i1] == arr[i1+3] && arr[i1+3] == arr[i1+6]){
+				if(arr[i1] != -1)
+					return true;
+			}
+		}
+		if(arr[0] == arr[4] && arr[4] == arr[8]){
+			if(arr[0] != -1)
+				return true;
+		}
+		if(arr[2] == arr[4] && arr[4] == arr[6]){
+			if(arr[2] != -1)
+				return true;
+		}
+		return false;
+	}
+
+	function refresh_page()
+	{
+		var time = document.getElementById("timer");
+		setTimeout(function(){
+			t--;
+			timer.innerHTML = "Game refreshes in "+t + " seconds." ;
+			console.log("reloads in "+t);
+			if(t == 0){
+			   window.location.reload(1);
+			   return;
+			}
+			refresh_page();
+		}, 1000);
+
+	}
+	function clicked(f)
+	{
+		//alert(f.id);
+		if(gameDisabled)
+			return;
+		/*if(f.style.backgroundColor == 'red' || f.style.backgroundColor == 'green'){
+			alert("Invalid Move");
+			return;
+		}*/
+		if(f.value == '0' || f.value == 'X'){
+			alert("Invalid Move");
+			return;
+		}
+		if(turn == 0){
+			//f.style.backgroundColor = 'red';
+			f.value = 'X';
+		}
+		else{
+			//f.style.backgroundColor = 'green';
+			f.value = '0';
+		}
+		switch(f.id)
+		{
+			case 'cell1':
+				console.log(f.id);
+				//f.style.backgroundColor = 'red';
+				arr[0] = turn;
+				prev_history.push(1);
+				break;
+			case 'cell2':
+				arr[1] = turn;
+				prev_history.push(2);
+				break;
+			case 'cell3':
+				arr[2] = turn;
+				prev_history.push(3);
+				break;
+			case 'cell4':
+				arr[3] = turn;
+				prev_history.push(4);
+				break;
+			case 'cell5':
+				arr[4] = turn;
+				prev_history.push(5);
+				break;
+			case 'cell6':
+				arr[5] = turn;
+				prev_history.push(6);
+				break;
+			case 'cell7':
+				arr[6] = turn;
+				prev_history.push(7);
+				break;
+			case 'cell8':
+				arr[7] = turn;
+				prev_history.push(8);
+				break;
+			case 'cell9':
+				arr[8] = turn;
+				prev_history.push(9);
+				break;
+		}
+		//console.log(f.value);
+
+		prev_history.push(""+f.value);
+		if(isGameCompleted())
+		{
+			gameDisabled = true;
+			alert("User "+ (turn + 1) + " won the game. Congratulations.");
+			//refresh_page();
+			return;
+		}
+		turn = turn == 0?1:0;
+		var time = document.getElementById("timer");
+		time.innerHTML = "Now its user "+ (turn + 1) + " turn.";
+		console.log(turn);
+	}
+	function actionPrevious()
+	{
+		if(prev_history.length > 1){
+			var value = prev_history.pop();
+			var index = prev_history.pop();
+			document.getElementById("cell"+index).value = ' ';
+			next_history.push(index);
+			next_history.push(value);
+			turn = turn == 0?1:0;
+			var time = document.getElementById("timer");
+			time.innerHTML = "Now its user "+ (turn + 1) + " turn.";
+		}
+	}
+	function actionNext()
+	{
+		if(next_history.length > 1){
+			var value = next_history.pop();
+			var index = next_history.pop();
+			document.getElementById("cell"+index).value = value;
+			prev_history.push(index);
+			prev_history.push(value);
+			turn = turn == 0?1:0;
+			var time = document.getElementById("timer");
+			time.innerHTML = "Now its user "+ (turn + 1) + " turn.";
+		}
+	}
+
+</script>
+<center>
+	<table style="width:25%">
+		<tr>
+			<td><input type="button" id="cell1" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell2" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell3" class="tictactoe_button" onclick="clicked(this);"/></td>
+		</tr>
+		<tr>
+			<td><input type="button" id="cell4" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell5" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell6" class="tictactoe_button" onclick="clicked(this);"/></td>
+		</tr>
+		<tr>
+			<td><input type="button" id="cell7" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell8" class="tictactoe_button" onclick="clicked(this);"/></td>
+			<td><input type="button" id="cell9" class="tictactoe_button" onclick="clicked(this);"/></td>
+		</tr>
+	</table>
+	<input type="button" style = "width:50px;height:50px;margin-right:50px;" onclick="actionPrevious()" value="Back"/>
+	<input type="button" style = "width:50px;height:50px;"onclick="actionNext()" value="Next"/>
+	<div id = "timer"></div>
+</center>
